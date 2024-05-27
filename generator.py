@@ -1,5 +1,8 @@
 import json
 import random
+import time
+from datetime import datetime
+from kafka import KafkaProducer
 
 def generate_gps():
     # Generates random GPS coordinates (latitude, longitude)
@@ -35,12 +38,28 @@ def simulate_transactions(num_cards, num_transactions):
 
     return transactions
 
-def write_to_json(file_path, data):
-    with open(file_path, "w") as file:
-        json.dump(data, file, indent=4)
+def serializer(message):
+    return json.dumps(message).encode('utf-8')
 
-# Simulate 10000 transactions for 10000 different cards
-transactions = simulate_transactions(10000, 10000)
-write_to_json("transactions.json", transactions)
+# Kafka Producer
+producer = KafkaProducer(
+    bootstrap_servers=['localhost:9092'],
+    value_serializer=serializer
+)
 
-print("Transactions generated and written to 'transactions.json'")
+if __name__ == '__main__':
+    num_cards = 10000
+    num_transactions = 10000
+    transactions = simulate_transactions(num_cards, num_transactions)
+
+    # Infinite loop - runs until you kill the program
+    for transaction in transactions:
+        # Send it to our 'transactions' topic
+        print(f'Producing transaction @ {datetime.now()} | Transaction = {transaction}')
+        producer.send('transactions', transaction)
+        # Sleep for a random number of seconds
+        time_to_sleep = random.randint(1, 11)
+        time.sleep(time_to_sleep)
+
+    write_to_json("transactions.json", transactions)
+    print("Transactions generated and sent to Kafka topic 'transactions'")
