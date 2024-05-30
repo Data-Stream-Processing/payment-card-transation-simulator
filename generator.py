@@ -19,7 +19,8 @@ def generate_transaction(card_id, user_id, spend_limit):
     return {
         "card_id": card_id,
         "user_id": user_id,
-        "gps_coordinates": gps_coords,
+        "latitude": latitude,
+        "longitude": longitude,
         "transaction_value": transaction_value,
         "spend_limit": spend_limit
     }
