@@ -11,7 +11,7 @@ def generate_gps():
     return latitude, longitude
 
 def generate_transaction(card_id, user_id, spend_limit):
-    gps_coords = generate_gps()
+    latitude, longitude = generate_gps()
     transaction_value = round(random.uniform(1, spend_limit), 2)
     if random.random() < 0.05:  # 5% chance of anomaly
         transaction_value = round(transaction_value * 2, 2)  # Anomaly: sudden increase in transaction value
